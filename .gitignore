@@ -3,5 +3,6 @@ lib/**
 pom.xml
 .#*
 .lein-failures
+.lein-deps-sum
 multi-lib/**
 *.jar
