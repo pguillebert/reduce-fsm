@@ -7,7 +7,7 @@
 		     [server-socket "1.0.0"] ;; used for examples/simple_server.clj
 		     [lein-multi "1.1.0-SNAPSHOT"]
 		     [org.clojars.weavejester/autodoc "0.9.0"]]
-
+  :aot :all
   :autodoc {:web-src-dir "https://github.com/cdorrat/reduce-fsm/"
 	    :web-home "http://cdorrat.github.com/reduce-fsm/"
 	    :output-path "./autodoc/api"})
