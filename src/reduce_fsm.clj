@@ -7,11 +7,7 @@ This package allows you to:
  - Create stateful filter functions for use with filter/remove (see fsm-filter)
  - Visualise state machines as"
   (:use [clojure.core [match :only [match]]])
-  (:require
-   [clojure [set :as set]]
-   [dorothy [core :as d]]
-	    [clojure [string :as str]])
-  )
+  (:require [clojure [set :as set]]))
 
 (defn- fsm-fn?
   "return true if the symbol will be treated as a function in fsm state definitions."
@@ -142,9 +138,9 @@ Parameters:
 
 (defn- expand-dispatch [dispatch-type evt acc]
   (case dispatch-type
-	:event-only [`match evt]
-	:event-and-acc   [`match [acc evt]]
-	(throw (RuntimeException. "unknown fsm dispatch type, expected one of [:event-only :event-and-acc]"))))
+    :event-only [`match evt]
+    :event-and-acc   [`match [acc evt]]
+    (throw (RuntimeException. "unknown fsm dispatch type, expected one of [:event-only :event-and-acc]"))))
 
 (defn- state-fn-impl
   "define the function used to represent a single state internally"
@@ -651,38 +647,3 @@ See https://github.com/cdorrat/reduce-fsm for examples and documentation"
 	  (format-trans [trans idx]
 			[(:from-state trans) (:to-state trans) {:label (transition-label trans idx)} ])]
     (map format-trans (:transitions state) (range (count (:transitions state))))))
-
-(defn- dorothy-fsm-dot
-  "Create the graphviz dot output for an fsm"
-  [fsm]
-  (let [start-state (keyword (gensym "start-state"))
-	state-map (->> fsm meta ::states)
-	fsm-type (->> fsm meta ::fsm-type)]
-    (-> (d/digraph
-	 (concat
-	  [[start-state {:label "start" :style :filled :color :black :shape "point" :width 0.2 :height 0.2}]]
-	  (map (partial dorothy-state fsm-type) state-map)
-	  [[start-state (-> state-map first :state)]]
-	  (mapcat transitions-for-state state-map)))
-	d/dot)))
-
-
-(defn- show-dorothy-fsm [fsm]
-  (d/show! (dorothy-fsm-dot fsm)))
-
-(defn show-fsm
-  "Display the fsm as a diagram using graphviz (see http://www.graphviz.org/)"
-  [fsm]
-  (when (graphviz-installed?)
-    (show-dorothy-fsm fsm)))
-
-
-(defn save-fsm-image
-    "Save the state transition diagram for an fsm as a png.
-Expects the following parameters:
-  - fsm      - the fsm to render
-  - filename - the output file for the png."
-  [fsm filename]
-  (when (graphviz-installed?)
-    (d/save! (dorothy-fsm-dot fsm) filename {:format :png}))
-  nil)
